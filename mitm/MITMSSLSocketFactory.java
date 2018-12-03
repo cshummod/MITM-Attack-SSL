@@ -118,8 +118,8 @@ public final class MITMSSLSocketFactory implements MITMSocketFactory
 		final String keyStoreFile = System.getProperty(JSSEConstants.KEYSTORE_PROPERTY);
 		final char[] keyStorePassword = System.getProperty(JSSEConstants.KEYSTORE_PASSWORD_PROPERTY, "").toCharArray();
 		final String keyStoreType = System.getProperty(JSSEConstants.KEYSTORE_TYPE_PROPERTY, "jks");
-		final String alias = System.getProperty(JSSEConstants.KEYSTORE_ALIAS_PROPERTY, "mykey");
-		//System.err.println("alias = " + alias);
+		final String alias = System.getProperty(JSSEConstants.KEYSTORE_ALIAS_PROPERTY, "mykey2");
+		System.err.println("alias= " + alias);
 		final KeyStore keyStore;
 
 		if (keyStoreFile != null) {

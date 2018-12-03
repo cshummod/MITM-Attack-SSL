@@ -172,7 +172,7 @@ public class HTTPSProxyEngine extends ProxyEngine
 			javax.security.cert.X509Certificate[] sesssionCertCh = remoteSocket.getSession().getPeerCertificateChain();
 			iaik.x509.X509Certificate serverCertificate = new iaik.x509.X509Certificate(sesssionCertCh[0].getEncoded());
 			Principal serverCN = serverCertificate.getSubjectDN();
-			BigInteger serialno = serverCertificate.getSerialNumber();
+			BigInteger serialNo = serverCertificate.getSerialNumber();
 
 			//************************************************************************************************************
 
@@ -184,7 +184,7 @@ public class HTTPSProxyEngine extends ProxyEngine
 		    //This is a CRUCIAL step:  we dynamically generate a new cert, based
 		    // on the remote server's CN, and return a reference to the internal
 		    // server socket that will make use of it.
-		    ServerSocket localProxy = m_proxySSLEngine.createServerSocket(serverCN, serialno);
+		    ServerSocket localProxy = m_proxySSLEngine.createServerSocket(serverCN, serialNo);
 
 		    //Kick off a new thread to send/recv data to/from the remote server.
 		    // Remote server's response data is made available via an internal 
