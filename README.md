@@ -5,14 +5,7 @@ We developed an SSL Proxy that intercept HTTPS request made by a user using MITM
 
 <img src="./figure 1.jpg" style="display: block; margin-left: auto; margin-right: auto; width: 70%;">
 
-<style>
-p {
-    text-indent: 30px;
-    text-align: justify;
-    text-justify: inter-word;
-}
 
-</style>
 ## 2.Design
 <h4>2.1 Key Generation</h4>
 <p>We have used a popular tool called <i><b>keytool</b></i>  to generate and manage keys and certificates. our key store is named "myKeyStore" with password "keystore". The private key was signed using RSA algorithm.
