@@ -12,4 +12,5 @@ public interface JSSEConstants
 	"javax.net.ssl.keyStoreAlias";
 
     public final static String DEFAULT_ALIAS = "mykey";
+
 }

@@ -41,6 +41,7 @@ public class MITMAdminClient {
         return null;
     }
 
+    //************************************************************************************
 
     private static class TrustEveryone implements javax.net.ssl.X509TrustManager {
         public void checkClientTrusted(java.security.cert.X509Certificate[] chain,
@@ -56,6 +57,7 @@ public class MITMAdminClient {
         }
     }
 
+    //************************************************************************************
 
     private MITMAdminClient(String[] args) {
         int remotePort = 8002;
@@ -84,6 +86,8 @@ public class MITMAdminClient {
                 }
             }
 
+            //************************************************************************************
+
             SSLContext sslContext = SSLContext.getInstance("SSL");
 
             sslContext.init(
@@ -95,7 +99,9 @@ public class MITMAdminClient {
 
             // TODO upgrade this to an SSL connection
 
-            m_remoteSocket = new MITMSSLSocketFactory().createClientSocket(remoteHost, remotePort);
+            m_remoteSocket = new mitm.MITMSSLSocketFactory().createClientSocket(remoteHost, remotePort);
+
+            //************************************************************************************
 
 
         } catch (Exception e) {

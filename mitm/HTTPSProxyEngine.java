@@ -49,7 +49,7 @@ import java.security.Principal;
  * handle SSL.
  *
  */
-public class HTTPSProxyEngine extends ProxyEngine
+public class HTTPSProxyEngine extends mitm.ProxyEngine
 {
 
     public static final String ACCEPT_TIMEOUT_MESSAGE = "Listen time out";
@@ -64,13 +64,13 @@ public class HTTPSProxyEngine extends ProxyEngine
 	public int proxiedRequests = 0;
 
 
-	public HTTPSProxyEngine(MITMPlainSocketFactory plainSocketFactory,
-			    MITMSSLSocketFactory sslSocketFactory,
-			    ProxyDataFilter requestFilter,
-			    ProxyDataFilter responseFilter,
-			    String localHost,
-			    int localPort,
-			    int timeout)
+	public HTTPSProxyEngine(mitm.MITMPlainSocketFactory plainSocketFactory,
+							mitm.MITMSSLSocketFactory sslSocketFactory,
+							mitm.ProxyDataFilter requestFilter,
+							mitm.ProxyDataFilter responseFilter,
+							String localHost,
+							int localPort,
+							int timeout)
         throws IOException, PatternSyntaxException
     {
 	// We set this engine up for handling plain HTTP and delegate
@@ -78,7 +78,7 @@ public class HTTPSProxyEngine extends ProxyEngine
 	super(plainSocketFactory,
 	      requestFilter,
 	      responseFilter,
-	      new ConnectionDetails(localHost, localPort, "", -1, false),
+	      new mitm.ConnectionDetails(localHost, localPort, "", -1, false),
 	      timeout);
 	
  	m_httpsConnectPattern =
@@ -166,7 +166,6 @@ public class HTTPSProxyEngine extends ProxyEngine
 		    }
 
 
-// هنا المفروض اننا ناخذ ال serial number , DN  من ال Session الحالي !!!!ََ!
 		    // TODO: add in code to get the remote server's CN  and serial number from its cert.
 			//************************************************************************************
 			javax.security.cert.X509Certificate[] sesssionCertCh = remoteSocket.getSession().getPeerCertificateChain();
@@ -174,7 +173,7 @@ public class HTTPSProxyEngine extends ProxyEngine
 			Principal serverCN = serverCertificate.getSubjectDN();
 			BigInteger serialNo = serverCertificate.getSerialNumber();
 
-			//************************************************************************************************************
+			//************************************************************************************
 
 
 
@@ -202,13 +201,13 @@ public class HTTPSProxyEngine extends ProxyEngine
 		    // Now set up a couple of threads to punt
 		    // everything we receive over localSocket to
 		    // sslProxySocket, and vice versa.
-		    new Thread(new CopyStreamRunnable(
+		    new Thread(new mitm.CopyStreamRunnable(
 				   in, sslProxySocket.getOutputStream()),
 			       "Copy to proxy engine for " + target).start();
 
 		    final OutputStream out = localSocket.getOutputStream();
 
-		    new Thread(new CopyStreamRunnable(
+		    new Thread(new mitm.CopyStreamRunnable(
 				   sslProxySocket.getInputStream(), out),
 			       "Copy from proxy engine for " + target).start();
 
@@ -250,20 +249,20 @@ public class HTTPSProxyEngine extends ProxyEngine
      * remote SSLServer, that the client is making a request to.
      *
      */
-    private class ProxySSLEngine extends ProxyEngine {
+    private class ProxySSLEngine extends mitm.ProxyEngine {
 	Socket remoteSocket = null;
 	int timeout = 0;
 	/*
 	 * NOTE: that port number 0, used below indicates a system-allocated,
 	 * dynamic port number.
 	 */
-	ProxySSLEngine(MITMSSLSocketFactory socketFactory,
-		       ProxyDataFilter requestFilter,
-		       ProxyDataFilter responseFilter)
+	ProxySSLEngine(mitm.MITMSSLSocketFactory socketFactory,
+				   mitm.ProxyDataFilter requestFilter,
+				   mitm.ProxyDataFilter responseFilter)
 	    throws IOException
 	{
 	    super(socketFactory, requestFilter, responseFilter,
-		  new ConnectionDetails(HTTPSProxyEngine.this.
+		  new mitm.ConnectionDetails(HTTPSProxyEngine.this.
 					getConnectionDetails().getLocalHost(),
 					0, "", -1, true),
 		  0);
@@ -274,7 +273,7 @@ public class HTTPSProxyEngine extends ProxyEngine
 	}
 
 	public final ServerSocket createServerSocket(Principal remoteServerCN, BigInteger serialno) throws IOException, java.security.GeneralSecurityException, Exception {
-	    MITMSSLSocketFactory ssf = new MITMSSLSocketFactory(remoteServerCN, serialno);
+	    mitm.MITMSSLSocketFactory ssf = new mitm.MITMSSLSocketFactory(remoteServerCN, serialno);
 	    // you may want to consider caching this result for better performance
 	    m_serverSocket = ssf.createServerSocket("localhost", 0, timeout);
 	    return m_serverSocket;

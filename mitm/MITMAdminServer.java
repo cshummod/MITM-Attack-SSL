@@ -7,7 +7,6 @@ package mitm;
 import java.net.*;
 import java.io.*;
 import java.security.GeneralSecurityException;
-import java.util.*;
 import java.util.regex.*;
 
 // You need to add code to do the following
@@ -18,13 +17,13 @@ import java.util.regex.*;
 class MITMAdminServer implements Runnable {
     private ServerSocket m_serverSocket;
     private Socket m_socket = null;
-    private HTTPSProxyEngine m_engine;
-    private static final String salt = "+CS432_NetwOrks<!>Security+";
+    private mitm.HTTPSProxyEngine m_engine;
+    private static final String SALT = "$2a$12$zGxzQujm3NRaUD34F0nyce";
 
 
-    public MITMAdminServer(String localHost, int adminPort, HTTPSProxyEngine engine) throws IOException {
-        MITMPlainSocketFactory socketFactory =
-                new MITMPlainSocketFactory();
+    public MITMAdminServer(String localHost, int adminPort, mitm.HTTPSProxyEngine engine) throws IOException, GeneralSecurityException {
+        mitm.MITMSSLSocketFactory socketFactory = new mitm.MITMSSLSocketFactory();
+
         m_serverSocket = socketFactory.createServerSocket(localHost, adminPort, 0);
         m_engine = engine;
 
@@ -38,10 +37,10 @@ class MITMAdminServer implements Runnable {
 
                 byte[] buffer = new byte[40960];
 
-                //Pattern userPwdPattern =
-                //     Pattern.compile("username:(\\S+)\\s+password:(\\S+)\\s+command:(\\S+)\\sCN:(\\S*)\\s");
                 Pattern userPwdPattern =
-                        Pattern.compile("password:(\\S+)\\s+command:(\\S+)\\sCN:(\\S*)\\s");
+                        Pattern.compile("username:(\\S+)\\s+password:(\\S+)\\s+command:(\\S+)\\sCN:(\\S*)\\s");
+
+
                 BufferedInputStream in =
                         new BufferedInputStream(m_socket.getInputStream(),
                                 buffer.length);
@@ -58,18 +57,29 @@ class MITMAdminServer implements Runnable {
 
                 // parse username and pwd
                 if (userPwdMatcher.find()) {
-                    //  String userName = userPwdMatcher.group(1);
-                    String userPassword = userPwdMatcher.group(1);
+                    String userName = userPwdMatcher.group(1);
+                    String password = userPwdMatcher.group(2);
+
+                    //************************************************************************************
+
+                    // TODO: authenticate the user
                     boolean authenticated = false;
-                    // authenticate the user
-                    if (BCrypt.checkpw(userPassword + salt, getHash("mohammed"))) {
+
+                    String hashedInput = mitm.BCrypt.hashpw(password, SALT);
+
+                    if (hashedInput.equals(getHash(userName))) {
                         authenticated = true;
                     }
+
+                    // if authenticated, do the command
                     if (authenticated) {
-                        String command = userPwdMatcher.group(2);
-                        String CN = userPwdMatcher.group(3);
+                        String command = userPwdMatcher.group(3);
+                        String commonName = userPwdMatcher.group(4);
                         doCommand(command);
                     }
+
+                    //************************************************************************************
+
                 }
             } catch (InterruptedIOException e) {
             } catch (Exception e) {
@@ -78,8 +88,9 @@ class MITMAdminServer implements Runnable {
         }
     }
 
+    //************************************************************************************
 
-    public static String getHash(String userName) throws Exception {
+    public static String getHash(String userName) throws IOException {
         BufferedReader br = new BufferedReader(new FileReader("hashedPwdFile"));
         String line;
         String hashedPass = null;
@@ -115,5 +126,7 @@ class MITMAdminServer implements Runnable {
         m_socket.close();
 
     }
+
+    //************************************************************************************
 
 }
