@@ -32,3 +32,4 @@ clean:
 	    rm -f mitm/*\$*.class mitm/*.class mitm/*~
 
 mitm:    $(JAVAOBJS)
+
